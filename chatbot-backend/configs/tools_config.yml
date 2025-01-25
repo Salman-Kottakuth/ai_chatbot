@@ -1,0 +1,24 @@
+primary_agent:
+  llm: gemini-1.5-flash
+  llm_temperature: 0.0
+
+# pinecone_rag:
+#   llm: gpt-4o-mini
+#   llm_temperature: 0.0
+#   embedding_model: text-embedding-3-small
+#   k: 2
+
+# faiss_tool:
+#   db_faiss_path: "vectorstore/db_faiss"  
+#   csv_file_path: "chatbotquestionedited.csv" 
+#   k: 2  
+#   embedding_model: "text-embedding-ada-002"  
+
+langsmith:
+  tracing: "false"
+  project_name: "RAG & API tool call"
+
+graph_configs:
+  thread_id: 1b # This can be adjusted to assign a unique value for each user session, so it's easier to access data later on.
+
+

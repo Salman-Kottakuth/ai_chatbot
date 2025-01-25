@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.0/css/font-awesome.css" integrity="sha512-72McA95q/YhjwmWFMGe8RI3aZIMCTJWPBbV8iQY3jy1z9+bi6+jHnERuNrDPo/WGYEzzNs4WdHNyyEr/yXJ9pA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}"> -->
+     <style>/* General reset and box-sizing */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        /* Body and overall layout */
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f9;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+        }
+        
+        .chatBot {
+          width: 800px;
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        }
+        
+        header {
+          background-color: #a184c5;
+          color: rgb(255, 255, 255);
+          padding: 16px;
+          font-family: 'Times New Roman', Times, serif;
+          font-size: 18px;
+          position: relative;
+        }
+        
+        #cross {
+          position: absolute;
+          top: 8px;
+          right: 16px;
+          font-size: 20px;
+          cursor: pointer;
+        }
+        
+        .chatbox {
+          list-style-type: none;
+          padding: 16px;
+          overflow-y: auto;
+          height: 450px;
+          border-bottom: 1px solid #ddd;
+        }
+        
+        .chatbox .chat {
+          margin-bottom: 16px;
+          padding: 10px;
+          border-radius: 8px;
+          max-width: 80%;
+        }
+        
+        .chatbox .chat-incoming {
+          background-color: #f1f1f1;
+          text-align: left;
+        }
+        
+        .chatbox .chat-outgoing {
+          background-color: #a184c5;
+          color: white;
+          text-align: right;
+        }
+        
+        .chatbox .chat p {
+          margin: 0;
+        }
+        
+        .chat-input {
+          padding: 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #f9f9f9;
+          border-top: 1px solid #ddd;
+        }
+        
+        .chat-input textarea {
+          width: 80%;
+          padding: 10px;
+          border-radius: 4px;
+          border: 1px solid #ddd;
+          font-size: 16px;
+          resize: none;
+        }
+        
+        .chat-input button {
+          width: 15%;
+          background-color: #a184c5;
+          border: none;
+          color: white;
+          padding: 12px 16px;
+          font-size: 16px;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .chat-input .voice-assist{
+          background: #000 !important;
+          width: 46px!important;
+          border-radius: 50px;
+          margin-right: 10px;
+          margin-left: 10px;
+        }
+        .voice-assist-stop{
+          background: #fff7f7 !important;
+          border: 1px solid #ff0000 !important;
+          width: 46px!important;
+          color: #ff0000 !important;
+          border-radius: 100% !important;
+          margin-right: 10px;
+          margin-left: 10px;
+        }
+        .chat-input button:hover {
+          background-color: #a184c5;
+        }
+        
+        .chat-input button:active {
+          background-color: #5233aa;
+        }
+        </style>
+</head>
+<body>
+    <div class="chatBot">
+        <header>
+            <h2>Voyon AI Chatbot</h2>
+            <!-- <span alt="Close" id="cross" onclick="cancel()">X</span> -->
+        </header>
+        <ul class="chatbox">
+            {% for message in chat_history %}
+                <li class="chat {% if message[0] == 'outgoing' %}chat-outgoing{% else %}chat-incoming{% endif %}">
+                    <p>{{ message[1] }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="chat-input">
+            <textarea rows="0" cols="17" placeholder="Enter a message..." id="voice-input"></textarea>
+            <button id="start-recording" class="voice-assist"><i class="fa fa-microphone" aria-hidden="true"></i></button>
+            <button id="stop-recording" class="voice-assist-stop"><i class="fa fa-stop" aria-hidden="true"></i></button>
+            <button id="sendBTN">Send</button>
+        </div>
+    </div>
+    <!-- <script src="{{ url_for('static', path='/script.js') }}" defer></script> -->
+     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sendButton = document.getElementById("sendBTN");
+            const messageInput = document.querySelector(".chat-input textarea");
+            const chatBox = document.querySelector(".chatbox");
+        
+            // Close the chat window
+            function cancel() {
+                window.close();
+            }
+        
+            // Function to append a new message to the chatbox
+            function appendMessage(message, type) {
+                const messageElement = document.createElement("li");
+                messageElement.classList.add("chat");
+                messageElement.classList.add(type); // 'chat-incoming' or 'chat-outgoing'
+
+                // Replace newlines with <br> tags to format the text correctly in HTML
+                const formattedMessage = message.replace(/\n/g, "<br>");
+                messageElement.innerHTML = `<p>${formattedMessage}</p>`; // Use innerHTML to allow <br> rendering
+
+                chatBox.appendChild(messageElement);
+                chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the bottom
+            }
+
+            // Send message to the chatbot
+            async function sendMessage() {
+                const userMessage = messageInput.value.trim();
+                if (!userMessage) return; // Don't send if the input is empty
+        
+                // Append the user's message to the chatbox
+                appendMessage(userMessage, "chat-outgoing");
+        
+                // Clear the input field
+                messageInput.value = "";
+        
+                try {
+                    // Send the message to the backend
+                    const response = await fetch("/getAnswer", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ question: userMessage }),
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error("Error sending message");
+                    }
+        
+                    const data = await response.json();
+                    const botMessage = data[0]?.answer || "No response from chatbot.";
+        
+                    // Append the bot's response to the chatbox
+                    appendMessage(botMessage, "chat-incoming");
+                } catch (error) {
+                    console.error("Error:", error);
+                    appendMessage("Sorry, there was an error processing your message.", "chat-incoming");
+                }
+            }
+        
+            // Event listener for the send button
+            sendButton.addEventListener("click", sendMessage);
+        
+            // Allow pressing 'Enter' to send a message
+            messageInput.addEventListener("keypress", function(e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+        </script>
+        <script>
+          // Get the text input box
+          const startRecordingButton = document.getElementById("start-recording");
+          const stopRecordingButton = document.getElementById("stop-recording");
+          const voiceInputField = document.getElementById("voice-input");
+  
+          let recognition;
+          let isRecording = true;
+  
+          // Check if browser supports Web Speech API
+          if ('webkitSpeechRecognition' in window) {
+              recognition = new webkitSpeechRecognition();
+              recognition.continuous = true;
+              recognition.interimResults = true;
+              recognition.lang = "en-US";
+  
+              // Start recording when the "Start Voice Input" button is clicked
+              startRecordingButton.addEventListener("click", () => {
+                  recognition.start();
+                  isRecording = true;
+                  startRecordingButton.style.display = "none"; // Hide the Start button
+                  stopRecordingButton.style.display = "inline"; // Show the Stop button
+                  startRecordingButton.textContent = "Recording..."; // Change button text during recording
+              });
+  
+              // Stop recording when the "Stop Recording" button is clicked
+              stopRecordingButton.addEventListener("click", () => {
+                  recognition.stop();
+                  isRecording = false;
+                  startRecordingButton.style.display = "inline"; // Show the Start button again
+                  stopRecordingButton.style.display = "none"; // Hide the Stop button
+                  startRecordingButton.innerHTML = '<i class="fa fa-microphone" aria-hidden="true"></i>'; // Change back the button text
+              });
+  
+              // Process the results from speech recognition
+              recognition.onresult = function (event) {
+                  let transcript = '';
+                  for (let i = event.resultIndex; i < event.results.length; i++) {
+                      transcript += event.results[i][0].transcript;
+                  }
+  
+                  voiceInputField.value = transcript; // Set the voice input to the text area
+              };
+  
+              // Handle speech recognition end
+              recognition.onend = function () {
+                  if (isRecording) {
+                      startRecordingButton.textContent = '<i class="fa fa-microphone" aria-hidden="true"></i> '; // Reset button text
+                      startRecordingButton.style.display = "inline"; // Show start button
+                      stopRecordingButton.style.display = "none"; // Hide stop button
+                  }
+              };
+  
+              recognition.onerror = function (event) {
+                  console.error("Speech recognition error:", event.error);
+              };
+          }
+          else {
+              alert("Sorry, your browser does not support speech recognition.");
+          }
+  
+      </script>
+</body>
+</html>
