@@ -6,8 +6,19 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from src.chatbot.chatbot_backend import ChatBot 
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],  # Frontend URL (Angular app)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 # Define a Pydantic model for the request payload
 class UserMessageRequest(BaseModel):
@@ -65,6 +76,6 @@ async def chat_endpoint(request: UserMessageRequest):
 
 # If run directly
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
 
 
