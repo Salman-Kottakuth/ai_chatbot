@@ -5,6 +5,6 @@ import { AppComponent } from './app/app.component';
 import { provideHttpClient } from '@angular/common/http';
 import { ChatbotComponent } from './app/chatbot/chatbot.component';
 
-bootstrapApplication(ChatbotComponent, {
+bootstrapApplication(AppComponent, {
   providers: [provideHttpClient()], // Ensure the HTTP client is provided
 });

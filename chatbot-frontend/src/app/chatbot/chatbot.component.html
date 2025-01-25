@@ -1,12 +1,28 @@
-<div class="chat-container">
+<h1>DTBS AI Chatbot</h1>
+<!-- Chatbot Icon -->
+<!-- <div class="chatbot-icon" (click)="toggleChat()">💬</div> -->
+<div class="chatbot-icon" (click)="toggleChat()">
+  <img src="assets/chatbot_icon_2.png" alt="Chatbot Icon" />
+</div>
+
+<!-- Chat Window -->
+<div class="chat-window" *ngIf="chatVisible">
+  <div class="chat-header">
+    <span>Chatbot</span>
+    <!-- Chatbot close Buttons -->
+    <!-- <button class="close-btn" (click)="toggleChat()">X</button> -->
+    <button (click)="toggleChat()">&#10005;</button> <!-- Close button -->
+
+  </div>
+  <div class="chat-body">
     <div *ngFor="let message of messages">
       <div [ngClass]="{'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot'}">
         {{ message.text }}
       </div>
     </div>
-    <div class="input-container">
-      <input [(ngModel)]="userInput" placeholder="Type your message..." />
-      <button (click)="sendMessage()">Send</button>
-    </div>
   </div>
-  
+  <div class="chat-footer">
+    <input [(ngModel)]="userInput" placeholder="Type your message..." />
+    <button (click)="sendMessage()">Send</button>
+  </div>
+</div>

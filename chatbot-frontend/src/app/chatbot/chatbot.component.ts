@@ -1,34 +1,30 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common'; // Import CommonModule
-import { FormsModule } from '@angular/forms';   // Import FormsModule
+import { NgIf, NgFor, NgClass } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Add CommonModule and FormsModule here
+  imports: [NgIf, NgFor, NgClass, FormsModule],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css'],
 })
 export class ChatbotComponent {
-  messages: { sender: string; text: string }[] = [];
-  userInput: string = '';
+  chatVisible = false;
+  userInput = '';
+  messages: { text: string; sender: 'user' | 'bot' }[] = [];
 
-  constructor(private http: HttpClient) {}
+  toggleChat() {
+    this.chatVisible = !this.chatVisible;
+  }
 
   sendMessage() {
-    if (!this.userInput.trim()) return;
+    if (this.userInput.trim()) {
+      this.messages.push({ text: this.userInput, sender: 'user' });
+      this.userInput = '';
 
-    const userMessage = this.userInput;
-    this.messages.push({ sender: 'user', text: userMessage });
-    this.userInput = '';
-
-    this.http
-      .post<{ response: string }>('http://your-backend-api/chat', {
-        message: userMessage,
-      })
-      .subscribe((response) => {
-        this.messages.push({ sender: 'bot', text: response.response });
-      });
+      // Mock response
+      this.messages.push({ text: 'This is a response from the bot.', sender: 'bot' });
+    }
   }
 }
