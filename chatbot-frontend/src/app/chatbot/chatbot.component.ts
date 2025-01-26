@@ -16,7 +16,7 @@ export class ChatbotComponent {
   userInput: string = ''; // Holds the current user input
   messages: { text: string; sender: 'user' | 'bot' }[] = []; // Holds chat messages
 
-  private backendUrl = 'http://localhost:8000/getAnswer'; // Backend API endpoint
+  private backendUrl = 'http://127.0.0.1:8000/getAnswer'; // Backend API endpoint
 
   constructor(private http: HttpClient) {}
 
