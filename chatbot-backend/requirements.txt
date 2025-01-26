@@ -6,8 +6,6 @@ anyio==4.6.2.post1
 asttokens==2.4.1
 async-timeout==4.0.3
 attrs==24.2.0
-azure-core==1.32.0
-azure-identity==1.19.0
 bcrypt==4.2.0
 cachetools==5.5.1
 certifi==2024.8.30
@@ -66,7 +64,6 @@ langchain-community==0.3.3
 langchain-core==0.3.31
 langchain-google-genai==2.0.9
 langchain-openai==0.2.4
-langchain-sqlserver==0.1.1
 langchain-text-splitters==0.3.1
 langgraph==0.2.39
 langgraph-checkpoint==2.0.2
@@ -116,7 +113,6 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-multipart==0.0.12
 pytz==2024.2
-pywin32==308
 PyYAML==6.0.2
 pyzmq==26.2.0
 regex==2024.9.11
@@ -147,5 +143,5 @@ uritemplate==4.1.1
 urllib3==2.2.3
 uvicorn==0.32.0
 wcwidth==0.2.13
-websockets==12.0
 yarl==1.17.1
+langchain_huggingface==0.1.2
